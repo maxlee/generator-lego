@@ -1,15 +1,19 @@
 "use strict";
 
 // 加载插件
-var gulp = require('gulp'),
-    browsersync = require('browser-sync'),
-    sass = require('gulp-ruby-sass'),
+var gulp         = require('gulp'),
+    browserSync  = require('browser-sync'),
+    sass         = require('gulp-sass'),
+    sourcemaps   = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
-    minifycss = require('gulp-minify-css'),
-    header = require('gulp-header'),
-    uglify = require('gulp-uglify'),
-    moment = require('moment'),
-    reload = browsersync.reload;
+    minifyCSS    = require('gulp-minify-css'),
+    header       = require('gulp-header'),
+    uglify       = require('gulp-uglify'),
+    moment       = require('moment'),
+    reload       = browserSync.reload,
+    clean        = require('gulp-clean'),
+    rename       = require("gulp-rename");
+
 
 // 注释格式
 var pkg = require('./package.json');
@@ -17,7 +21,7 @@ var banner = '/*!' + '\n * @project : ' + pkg.name + '\n * @version : ' + pkg.ve
 
 // 启动服务
 gulp.task('browser-sync', function() {
-    browsersync({
+    browserSync({
         server: {
             baseDir: "./src/",
             directory: true
@@ -29,44 +33,57 @@ gulp.task('browser-sync', function() {
     });
 });
 
-// 脚本压缩
-gulp.task('uglify', function() {
-    gulp.src('./src/js/*.js')
-        .pipe(uglify())
-        .pipe(gulp.dest('./dist/js/'))
-});
+// // 脚本压缩
+// gulp.task('uglify', function() {
+//     gulp.src('./src/js/*.js')
+//         .pipe(uglify())
+//         .pipe(gulp.dest('./dist/js/'))
+// });
 
 // 样式压缩
-gulp.task('minify-css', function() {
-    gulp.src('./src/css/*.css')
-        .pipe(minifycss())
+// gulp.task('minify-css', function() {
+//     gulp.src('./src/css/*.css')
+//         .pipe(minifyCSS())
+//         .pipe(header(banner, {
+//             pkg: pkg
+//         }))
+//         .pipe(gulp.dest('./dist/css/'))
+// });
+
+// SASS编译
+// https://github.com/sindresorhus/gulp-autoprefixer/issues/8
+gulp.task('sass', function () {
+    return gulp.src('./src/sass/**/*.scss')
+        .pipe(sourcemaps.init())
+        .pipe(sass({errLogToConsole: true, outputStyle: 'compressed'}))
+        .pipe(sourcemaps.write({includeContent: false, sourceRoot: '.'}))
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(autoprefixer({browsers: ['last 1 version','> 1%', 'iOS 6', 'ie 8', 'ie 7'], cascade: false}))
+        .pipe(sourcemaps.write({includeContent: false, sourceRoot: '.'}))
         .pipe(header(banner, {
             pkg: pkg
         }))
-        .pipe(gulp.dest('./dist/css/'))
+        .pipe(gulp.dest('./src/css/'))
+        .pipe(reload({stream:true}));
 });
 
-// SASS编译
-gulp.task('sass', function() {
-    return gulp.src('./src/sass/**/*.scss')
-        .pipe(sass({
-            style: 'expanded'
-        }))
-        .on('error', function(err) {
-            console.log(err.message);
-        })
-        .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-        .pipe(gulp.dest('./src/css/'))
-        .pipe(reload({
-            stream: true
-        }));
+// Reload all Browsers
+gulp.task('bs-reload', function () {
+    browserSync.reload();
 });
+
+// Clean file
+// gulp.task('clean', function () {
+//     return gulp.src('./dist')
+//         .pipe(clean());
+// });
+
 //
 // 默认任务
 gulp.task('default', ['browser-sync'], function() {
     gulp.watch("./src/sass/**/*.scss", ['sass']);
-    gulp.watch("./src/*.html", ['fileinclude']);
+    gulp.watch("./src/*.html", ['bs-reload']);
 });
 //
 // 发布任务
-gulp.task('build', ['minify-css'], function() {});
+// gulp.task('build', ['clean','minify-css'], function() {});
