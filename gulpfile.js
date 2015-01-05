@@ -6,18 +6,18 @@ var gulp         = require('gulp'),
     sass         = require('gulp-sass'),
     sourcemaps   = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
-    minifyCSS    = require('gulp-minify-css'),
+    // minifyCSS    = require('gulp-minify-css'),
     header       = require('gulp-header'),
-    uglify       = require('gulp-uglify'),
+    // uglify       = require('gulp-uglify'),
     moment       = require('moment'),
-    reload       = browserSync.reload,
-    clean        = require('gulp-clean'),
-    rename       = require("gulp-rename");
+    reload       = browserSync.reload;
+    // clean        = require('gulp-clean'),
+    // rename       = require("gulp-rename");
 
 
 // 注释格式
-var pkg = require('./package.json');
-var banner = '/*!' + '\n * @project : ' + pkg.name + '\n * @version : ' + pkg.version + '\n * @author  : ' + pkg.author + '\n * @update  : ' + moment().format('YYYY-MM-DD h:mm:ss a') + '\n */\r';
+// var pkg = require('./package.json');
+// var banner = '/*!' + '\n * @project : ' + pkg.name + '\n * @version : ' + pkg.version + '\n * @author  : ' + pkg.author + '\n * @update  : ' + moment().format('YYYY-MM-DD h:mm:ss a') + '\n */\r';
 
 // 启动服务
 gulp.task('browser-sync', function() {
@@ -60,9 +60,6 @@ gulp.task('sass', function () {
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(autoprefixer({browsers: ['last 1 version','> 1%', 'iOS 6', 'ie 8', 'ie 7'], cascade: false}))
         .pipe(sourcemaps.write({includeContent: false, sourceRoot: '.'}))
-        .pipe(header(banner, {
-            pkg: pkg
-        }))
         .pipe(gulp.dest('./src/css/'))
         .pipe(reload({stream:true}));
 });
