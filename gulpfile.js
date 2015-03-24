@@ -6,12 +6,14 @@ var gulp         = require('gulp'),
     sass         = require('gulp-sass'),
     sourcemaps   = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
-    // minifyCSS    = require('gulp-minify-css'),
-    header       = require('gulp-header'),
+    minifyCSS    = require('gulp-minify-css'),
+    // header       = require('gulp-header'),
     // uglify       = require('gulp-uglify'),
-    moment       = require('moment'),
-    reload       = browserSync.reload;
-    // clean        = require('gulp-clean'),
+    // moment       = require('moment'),
+    minifyHTML   = require('gulp-minify-html'),
+    uglify       = require('gulp-uglify'),
+    reload       = browserSync.reload,
+    del          = require('del');
     // rename       = require("gulp-rename");
 
 
@@ -41,14 +43,14 @@ gulp.task('browser-sync', function() {
 // });
 
 // 样式压缩
-// gulp.task('minify-css', function() {
-//     gulp.src('./src/css/*.css')
-//         .pipe(minifyCSS())
-//         .pipe(header(banner, {
-//             pkg: pkg
-//         }))
-//         .pipe(gulp.dest('./dist/css/'))
-// });
+gulp.task('minify-css', function() {
+    gulp.src('./src/css/*.css')
+        .pipe(minifyCSS())
+        // .pipe(header(banner, {
+        //     pkg: pkg
+        // }))
+        .pipe(gulp.dest('./dist/css/'))
+});
 
 // SASS编译
 // https://github.com/sindresorhus/gulp-autoprefixer/issues/8
@@ -63,24 +65,34 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('./src/css/'))
         .pipe(reload({stream:true}));
 });
-
+gulp.task('minify-html', function() {
+    //var opts = {empty:true,cdata:true,comments:true,conditionals:true,spare:true,quotes:true};
+    var opts = {};
+    gulp.src('./src/*.html')
+        .pipe(minifyHTML(opts))
+        .pipe(gulp.dest('./dist/'))
+});
+gulp.task('compress', function() {
+  gulp.src('./src/js/*.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist/js/'))
+});
 // Reload all Browsers
 gulp.task('bs-reload', function () {
     browserSync.reload();
 });
 
 // Clean file
-// gulp.task('clean', function () {
-//     return gulp.src('./dist')
-//         .pipe(clean());
-// });
+gulp.task('clean', function () {
+    del.sync(['dist/**']);
+});
 
 //
 // 默认任务
 gulp.task('default', ['browser-sync'], function() {
     gulp.watch("./src/sass/**/*.scss", ['sass']);
-    gulp.watch("./src/*.html", ['bs-reload']);
+    gulp.watch("./src/*.html").on("change", browserSync.reload);
 });
 //
 // 发布任务
-// gulp.task('build', ['clean','minify-css'], function() {});
+gulp.task('build', ['clean','minify-html','minify-css','compress']);

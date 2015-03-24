@@ -1,4 +1,4 @@
-Gulp Workflow"
+Gulp Workflow
 =============
 
 To run the project
