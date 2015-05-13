@@ -1,0 +1,47 @@
+//@import "smartcss/smart";
+// 测试中文注释
+// 测试中文注释
+body {
+    h1 {
+        font-size: 60px;
+        display: inline-block;
+    }
+/* 测试中文注释测试中文注释测试中文注释 */
+
+    h2 {
+        background-color: #fF0;
+        transition: all 0.3s ease-out;
+        display: flex;
+        text-overflow: ellipsis;
+    }
+/*
+ 测试中文注释
+ 测试中文注释
+*/
+
+    background-image:url(http://assets.dwstatic.com/www/1.2.2/sprite/index.png?20150127160124);
+    background-repeat: no-repeat;
+}
+.t1 {
+    color: #000;
+    transform: rotate(360deg);
+
+    &:before {
+    }
+}
+
+.t2 {
+    transform: rotate(720deg);
+
+    &:before {
+
+    }
+}
+
+.t3 {
+    transform: rotat(1080deg);
+
+    &:before {
+
+    }
+}
