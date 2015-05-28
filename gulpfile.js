@@ -15,7 +15,9 @@ var gulp         = require('gulp'),
     del          = require('del'),
     notify       = require('gulp-notify'),
     plumber      = require('gulp-plumber'),
-    includer     = require('gulp-html-ssi');
+    imagemin     = require('gulp-imagemin'),
+    pngquant     = require('imagemin-pngquant');
+    // includer     = require('gulp-html-ssi');
     // rename       = require("gulp-rename");
 
 // 配置路径
@@ -73,13 +75,6 @@ gulp.task('browser-sync', function() {
 //         .pipe(gulp.dest('./dist/js/'))
 // });
 
-// html file ssi
-gulp.task('htmlSSI', function() {
-    gulp.src('./src/**/*.html')
-        .pipe(includer())
-        .pipe(gulp.dest('./src/'));
-});
-
 // 样式压缩
 gulp.task('minify-css', function() {
     gulp.src('./src/css/*.css')
@@ -102,6 +97,7 @@ gulp.task('sass', function() {
         }))
         .pipe(sourcemaps.init())
         .pipe(sass())
+        .pipe(minifyCSS({"compatibility": "ie7"}))
         .pipe(sourcemaps.write())
         .pipe(sourcemaps.init({
             loadMaps: true
@@ -114,7 +110,7 @@ gulp.task('sass', function() {
             stream: true
         }))
         .pipe(notify({
-            message: 'SASS任务编译通过✌️'
+            message: '✌️SASS任务编译通过'
         }));
 });
 
@@ -127,11 +123,22 @@ gulp.task('minify-html', function() {
         .pipe(gulp.dest('./dist/'))
 });
 
-//
+// 压缩脚本
 gulp.task('compress', function() {
     gulp.src('./src/js/*.js')
         .pipe(uglify())
         .pipe(gulp.dest('./dist/js/'))
+});
+
+// 压缩图片
+gulp.task('minify-img', function () {
+    return gulp.src('./src/img/*')
+        .pipe(imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        }))
+        .pipe(gulp.dest('./dist/img/'));
 });
 
 // Reload all Browsers
@@ -147,8 +154,8 @@ gulp.task('clean', function() {
 // 默认任务
 gulp.task('default', ['browser-sync'], function() {
     gulp.watch(path.sass.src + '**/*.scss', ['sass']);
-    gulp.watch('./src/**/*.html', ['htmlSSI']).on('change', browserSync.reload);
+    gulp.watch('./src/**/*.html').on('change', browserSync.reload);
 });
 
 // 发布任务
-gulp.task('build', ['clean', 'minify-css']);
+gulp.task('build', ['clean', 'minify-css','minify-html','minify-img']);
