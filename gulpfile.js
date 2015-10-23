@@ -1,5 +1,5 @@
 "use strict";
-
+// http://pinkyjie.com/2015/03/24/refactor-your-gulpfile/
 // 加载插件
 var gulp         = require('gulp'),
     browserSync  = require('browser-sync'),
@@ -17,7 +17,6 @@ var gulp         = require('gulp'),
     plumber      = require('gulp-plumber'),
     imagemin     = require('gulp-imagemin'),
     pngquant     = require('imagemin-pngquant');
-    // includer     = require('gulp-html-ssi');
     // rename       = require("gulp-rename");
 
 // 配置路径
@@ -30,7 +29,7 @@ var path = {
     },
     sass: {
         src: './src/sass/',
-        dist: ''
+        dist: './dist/sass/'
     },
     js: {
         src: './src/js/',
@@ -68,22 +67,7 @@ gulp.task('browser-sync', function() {
     });
 });
 
-// // 脚本压缩
-// gulp.task('uglify', function() {
-//     gulp.src('./src/js/*.js')
-//         .pipe(uglify())
-//         .pipe(gulp.dest('./dist/js/'))
-// });
 
-// 样式压缩
-gulp.task('minify-css', function() {
-    gulp.src('./src/css/*.css')
-        .pipe(minifyCSS({"compatibility": "ie7"}))
-        .pipe(header(banner, {
-            pkg: pkg
-        }))
-        .pipe(gulp.dest('./dist/css/'))
-});
 
 // SASS编译
 // https://github.com/sindresorhus/gulp-autoprefixer/issues/8
@@ -122,14 +106,24 @@ gulp.task('minify-html', function() {
         .pipe(minifyHTML(opts))
         .pipe(gulp.dest('./dist/'))
 });
-
+// 样式压缩
+gulp.task('minify-css', function() {
+    gulp.src('./src/css/*.css')
+        .pipe(minifyCSS({"compatibility": "ie7"}))
+        .pipe(header(banner, {
+            pkg: pkg
+        }))
+        .pipe(gulp.dest('./dist/css/'))
+});
 // 压缩脚本
 gulp.task('compress', function() {
     gulp.src('./src/js/*.js')
         .pipe(uglify())
+        .pipe(header(banner, {
+            pkg: pkg
+        }))
         .pipe(gulp.dest('./dist/js/'))
 });
-
 // 压缩图片
 gulp.task('minify-img', function () {
     return gulp.src('./src/img/*')
@@ -140,6 +134,7 @@ gulp.task('minify-img', function () {
         }))
         .pipe(gulp.dest('./dist/img/'));
 });
+
 
 // Reload all Browsers
 gulp.task('bs-reload', function() {
@@ -155,7 +150,10 @@ gulp.task('clean', function() {
 gulp.task('default', ['browser-sync'], function() {
     gulp.watch(path.sass.src + '**/*.scss', ['sass']);
     gulp.watch('./src/**/*.html').on('change', browserSync.reload);
+    gulp.watch('./src/**/*.js').on('change', browserSync.reload);
+    gulp.watch('./src/**/*.png').on('change', browserSync.reload);
+    gulp.watch('./src/**/*.jpg').on('change', browserSync.reload);
 });
 
 // 发布任务
-gulp.task('build', ['clean', 'minify-css','minify-html','minify-img']);
+gulp.task('build', ['clean', 'minify-css','minify-html','compress','minify-img']);
