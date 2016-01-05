@@ -16,7 +16,8 @@ var gulp         = require('gulp'),
     notify       = require('gulp-notify'),
     plumber      = require('gulp-plumber'),
     imagemin     = require('gulp-imagemin'),
-    pngquant     = require('imagemin-pngquant');
+    pngquant     = require('imagemin-pngquant'),
+    ejs          = require('gulp-ejs');
     // rename       = require("gulp-rename");
 
 // 配置路径
@@ -146,9 +147,20 @@ gulp.task('clean', function() {
     del.sync(['./dist/**']);
 });
 
+// ejs解析
+gulp.task('ejs', function() {
+    return gulp.src('src/tpl/**/*.ejs')
+        .pipe(ejs({
+          msg: "Hello Gulp!"
+        }))
+        .pipe(gulp.dest('./src/'))
+        .pipe(reload({stream:true}))
+});
+
 // 默认任务
 gulp.task('default', ['browser-sync'], function() {
     gulp.watch(path.sass.src + '**/*.scss', ['sass']);
+    gulp.watch('./src/tpl/**/*.ejs', ['ejs']);
     gulp.watch('./src/**/*.html').on('change', browserSync.reload);
     gulp.watch('./src/**/*.js').on('change', browserSync.reload);
     gulp.watch('./src/**/*.png').on('change', browserSync.reload);

@@ -1,6 +1,6 @@
 {
     "name": "gulp-workflow",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": "Max",
     "description": "Using Gulp, SASS and Browser-Sync for your front end web development.",
     "homepage": "https://github.com/maxlee/gulp-workflow",
@@ -19,7 +19,8 @@
         "gulp-imagemin": "^2.3.0",
         "imagemin-pngquant": "^4.2.0",
         "gulp-notify": "^2.2.0",
-        "gulp-plumber": "^1.0.1"
+        "gulp-plumber": "^1.0.1",
+        "gulp-ejs": "^1.2.1"
     },
     "repository": {}
 }
